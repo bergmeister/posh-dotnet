@@ -10,7 +10,6 @@ build_script:
   - ps: Import-Module .\posh-dotnet.psm1 # needed because otherwise AppVeyor complains
 
 test_script:
-  - choco install codecov
   - ps: |
         # Pester 
         Get-Module Pester -ListAvailable # Show Pester version (should be 3.4)
@@ -29,4 +28,5 @@ test_script:
         { 
             throw "$($results.FailedCount) tests failed."
         }
+  - choco install codecov
   - codecov -f "codeCov.json" -t "a432d38a-1b82-4a4d-8bfd-cd81b2ef6a3f"
