@@ -14,4 +14,4 @@ Import-Module .\posh-dotnet.psm1
 
 The first time you use it in a new shell you have to press tab twice but afterwards it works as expected.
 
-It has been tested on `Windows PowerShell 5.1`.
+It has been tested on `Windows PowerShell 5.1` using the dotnet CLI version 2.0.

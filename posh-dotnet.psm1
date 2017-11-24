@@ -50,16 +50,9 @@ $completion_Dotnet = {
         } 
         else 
         {
-            if ($state -ne "CommandOptions")
-            {
-                $commandParameters[$i] = "Command"
-                $command = $p
-                $state = "CommandOptions"
-            } 
-            else 
-            {
-                $commandParameters[$i] = "CommandOther"
-            }
+            $commandParameters[$i] = "Command"
+            $command = $p
+            $state = "CommandOptions"
         }
     }
 
@@ -89,18 +82,7 @@ $completion_Dotnet = {
 
     }
     
-    if ($wordToComplete -eq $null)
-    {
-        $commandToComplete = "Command"
-        if ($commandParameters.Count -gt 0)
-        {
-            if ($commandParameters[$commandParameters.Count] -eq "Command")
-            {
-                $commandToComplete = "CommandOther"
-            }
-        } 
-    }
-    else
+    if ($wordToComplete -ne $null)
     {
         $commandToComplete = $commandParameters[$wordToComplete]
     }
@@ -129,36 +111,7 @@ $completion_Dotnet = {
             $global:DotnetCompletion["commands"][$command]["options"] = $options
             $options | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult
         }
-        "CommandOther"
-        {
-            # $filter = $null
-            switch ($command)
-            {
-                "start" { FilterContainers $commandName "status=created", "status=exited" }
-                "stop" { FilterContainers $commandName "status=running" }
-                { @("run", "rmi", "history", "push", "save", "tag") -contains $_ } { CompleteImages $commandName }
-                default { FilterContainers $commandName }
-            }
-            
-        }
         default { $global:DotnetCompletion["commands"].Keys | MatchingCommand -Command $commandName }
-    }
-}
-
-function script:FilterContainers($commandName, $filter)
-{
-    Get-Containers $filter | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult
-}
-
-function script:CompleteImages($commandName)
-{
-    if ($commandName.Contains(":"))
-    {
-        Get-Images | ForEach-Object { $_.Repository + ":" + $_.Tag } | MatchingCommand -Command $commandName | Sort-Object -Unique | Get-AutoCompleteResult
-    } 
-    else 
-    {
-        Get-Images | Select-Object -ExpandProperty Repository | MatchingCommand -Command $commandName |  Sort-Object -Unique | Get-AutoCompleteResult
     }
 }
 
