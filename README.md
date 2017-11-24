@@ -4,7 +4,7 @@
 
 ## Usage
 
-Just import the self containted `posh-dotnet.psm1` module of this repo, e.g.:
+Import the self contained `posh-dotnet.psm1` module of this repo, e.g.:
 
 ````powershell
 git clone https://github.com/bergmeister/posh-dotnet.git
