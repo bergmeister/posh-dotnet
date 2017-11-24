@@ -1,0 +1,30 @@
+image: Visual Studio 2017
+
+install: 
+  - ps: $PSVersionTable
+  - ps: Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+
+build_script:
+  - ps: Import-Module .\posh-dotnet.psm1 # needed because otherwise AppVeyor complains
+
+test_script:
+  - choco install codecov
+  - ps: |
+        # Pester 
+        Get-Module Pester -ListAvailable # Show Pester version (should be 3.4)
+        $testResultsFile = ".\TestsResults.xml"
+        $results = Invoke-Pester -Path . -OutputFormat NUnitXml -OutputFile $testResultsFile -CodeCoverage @(
+             (Join-Path -Path $env:APPVEYOR_BUILD_FOLDER -ChildPath '*.psm1')
+           ) -PassThru -Verbose
+        (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
+        # Convert and upload code coverage
+        $codeCoverage = $results.CodeCoverage.NumberOfCommandsExecuted /( $results.CodeCoverage.NumberOfCommandsExecuted  + $results.CodeCoverage.NumberOfCommandsMissed)
+        Save-Module -Name VSTS -Path . -RequiredVersion 1.0.189
+        Import-Module .\VSTS\1.0.189\ci\CodeCovIo.psd1
+        Export-CodeCovIoJson -CodeCoverage $results.CodeCoverage -RepoRoot $env:APPVEYOR_BUILD_FOLDER -Path 'codeCov.json'
+        
+        if ($results.FailedCount -gt 0)
+        { 
+            throw "$($results.FailedCount) tests failed."
+        }
+  - codecov -f "codeCov.json" -t "a432d38a-1b82-4a4d-8bfd-cd81b2ef6a3f"
