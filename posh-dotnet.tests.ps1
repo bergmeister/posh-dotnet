@@ -22,3 +22,10 @@ Describe 'TabExpansion2' {
     }
 
 }
+
+Describe 'PSScriptAnalyzer' {
+    It 'There are no PScriptAnalyzer warnings' {
+        $results = Invoke-ScriptAnalyzer . -Recurse
+        $results | Should Be $null
+    }
+}
