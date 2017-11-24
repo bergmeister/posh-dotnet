@@ -16,4 +16,9 @@ Describe 'TabExpansion2' {
         $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
     }
 
+    It "dotnet build --c gets expanded to dotnet build --configuration" {
+        $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
+        $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
+    }
+
 }
