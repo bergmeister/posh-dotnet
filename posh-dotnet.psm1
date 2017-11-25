@@ -10,10 +10,14 @@ if ($global:DotnetCompletion.Count -eq 0)
     dotnet --help | ForEach-Object { 
         if ($_ -match "^\s{2,3}(\w+)\s+(.+)")
         {
-            $global:DotnetCompletion["commands"][$Matches[1]] = @{}
+            # The help includes some documentation that are indented the same way -> do not include them by assuming that commans start with a lower case
+            if ($null -ne $Matches[1] -and $Matches[1].Count -gt 0 -and !([Char]::IsUpper($Matches[1][0])))
+            {
+                $global:DotnetCompletion["commands"][$Matches[1]] = @{}
                 
-            $currentCommand = $global:DotnetCompletion["commands"][$Matches[1]]
-            $currentCommand["options"] = @()
+                $currentCommand = $global:DotnetCompletion["commands"][$Matches[1]]
+                $currentCommand["options"] = @()
+            }
         }
         elseif ($_ -match $flagRegex)
         {
