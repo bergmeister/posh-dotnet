@@ -18,7 +18,7 @@ if ($global:DotnetCompletion.Count -eq 0)
         elseif ($_ -match $flagRegex)
         {
             $global:DotnetCompletion["options"] += $Matches[1]
-            if ($Matches[2] -ne $null)
+            if ($null -ne $Matches[2])
             {
                 $global:DotnetCompletion["options"] += $Matches[2]
             }
