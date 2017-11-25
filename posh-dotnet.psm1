@@ -8,7 +8,6 @@ if ($global:DotnetCompletion.Count -eq 0)
     $global:DotnetCompletion["options"] = @()
         
     dotnet --help | ForEach-Object { 
-        Write-Output $_
         if ($_ -match "^\s{2,3}(\w+)\s+(.+)")
         {
             $global:DotnetCompletion["commands"][$Matches[1]] = @{}
