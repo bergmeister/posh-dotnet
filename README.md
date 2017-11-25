@@ -19,6 +19,4 @@ cd .\posh-dotnet
 Import-Module .\posh-dotnet.psd1
 ````
 
-Note: The first time you use it in a new shell you have to press tab twice but afterwards it works as expected.
-
 It has been tested on `Windows PowerShell 5.1` using the dotnet CLI version 2.0.3

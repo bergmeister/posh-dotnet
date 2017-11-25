@@ -2,6 +2,30 @@
 Param()
 
 $global:DotnetCompletion = @{}
+if ($global:DotnetCompletion.Count -eq 0)
+{
+    $global:DotnetCompletion["commands"] = @{}
+    $global:DotnetCompletion["options"] = @()
+        
+    dotnet --help | ForEach-Object { 
+        Write-Output $_
+        if ($_ -match "^\s{2,3}(\w+)\s+(.+)")
+        {
+            $global:DotnetCompletion["commands"][$Matches[1]] = @{}
+                
+            $currentCommand = $global:DotnetCompletion["commands"][$Matches[1]]
+            $currentCommand["options"] = @()
+        }
+        elseif ($_ -match $flagRegex)
+        {
+            $global:DotnetCompletion["options"] += $Matches[1]
+            if ($Matches[2] -ne $null)
+            {
+                $global:DotnetCompletion["options"] += $Matches[2]
+            }
+        }
+    }
+}
 
 $script:flagRegex = "^  (-[^, =]+),? ?(--[^= ]+)?"
 
@@ -54,32 +78,6 @@ $completion_Dotnet = {
             $command = $p
             $state = "CommandOptions"
         }
-    }
-
-    if ($global:DotnetCompletion.Count -eq 0)
-    {
-        $global:DotnetCompletion["commands"] = @{}
-        $global:DotnetCompletion["options"] = @()
-        
-        dotnet --help | ForEach-Object {
-            Write-Output $_
-            if ($_ -match "^\s{2,3}(\w+)\s+(.+)")
-            {
-                $global:DotnetCompletion["commands"][$Matches[1]] = @{}
-                
-                $currentCommand = $global:DotnetCompletion["commands"][$Matches[1]]
-                $currentCommand["options"] = @()
-            }
-            elseif ($_ -match $flagRegex)
-            {
-                $global:DotnetCompletion["options"] += $Matches[1]
-                if ($Matches[2] -ne $null)
-                {
-                    $global:DotnetCompletion["options"] += $Matches[2]
-                }
-            }
-        }
-
     }
     
     if ($wordToComplete -ne $null)
