@@ -4,8 +4,7 @@
 Describe 'TabExpansion2' {
     
     $poshdotnet_moduleName = 'posh-dotnet'
-    if ($null -ne (Get-Module $poshdotnet_moduleName -ListAvailable))
-    {
+    if ($null -ne (Get-Module $poshdotnet_moduleName -ListAvailable)) {
         Remove-Module $poshdotnet_moduleName
     }
     Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1")
@@ -23,8 +22,13 @@ Describe 'TabExpansion2' {
 }
 
 Describe 'PSScriptAnalyzer' {
+
+    if ($null -eq (Get-Module PSScriptAnalyzer -ListAvailable)) {
+        throw "PSScriptAnalyzer is not installed. Install it using 'Install-Module PSScriptAnalyzer' to be able to run this test"
+    }
+
     It 'There are no PScriptAnalyzer warnings' {
-        $results = Invoke-ScriptAnalyzer . -Recurse
+        $results = Invoke-ScriptAnalyzer $PSScriptRoot -Recurse
         $results | Should Be $null
     }
 }
