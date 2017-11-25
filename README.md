@@ -2,6 +2,8 @@
 
 `PowerShell` tab completion for the dotnet CLI.
 
+![Tab completion demo](demo.gif)
+
 ## Usage
 
 You can install it via the [PSGallery](https://www.powershellgallery.com/packages/posh-dotnet/)
