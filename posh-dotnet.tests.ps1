@@ -4,10 +4,8 @@
 Describe 'TabExpansion2' {
     
     $poshdotnet_moduleName = 'posh-dotnet'
-    if ($null -ne (Get-Module $poshdotnet_moduleName -ListAvailable)) {
-        Remove-Module $poshdotnet_moduleName
-    }
-    Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1")
+    # Note that the module does not get re-imported because removing the module would also remove the TabExpansion2 function
+    Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1") 
     
     It "dotnet b gets expanded to dotnet build" {
         $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
