@@ -7,7 +7,7 @@ install:
         Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
 
 build_script:
-  - ps: Import-Module .\posh-dotnet.psd1 # needed because otherwise AppVeyor complains
+  - ps: $PSVersionTable # needed because otherwise AppVeyor complains
 
 test_script:
   - ps: |
