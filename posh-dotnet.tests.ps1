@@ -4,6 +4,10 @@
 Describe 'TabExpansion2' {
     
     $poshdotnet_moduleName = 'posh-dotnet'
+    if ($null -ne (Get-Module $poshdotnet_moduleName -ListAvailable))
+    {
+        Remove-Module $poshdotnet_moduleName
+    }
     Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1")
     
     It "dotnet b gets expanded to dotnet build" {
