@@ -1,16 +1,11 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingEmptyCatchBlock", "")]Param()
 
-$poshdotnet_moduleName = 'posh-dotnet'
-Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1")
-try {
-    TabExpansion2 -inputScript "dotnet b" -cursorColumn 8 -ErrorAction Ignore # the first time it fails, this is a TODO item
-}
-catch {
-
-}
 
 Describe 'TabExpansion2' {
-
+    
+    $poshdotnet_moduleName = 'posh-dotnet'
+    Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1")
+    
     It "dotnet b gets expanded to dotnet build" {
         $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
         $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
