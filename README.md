@@ -4,12 +4,21 @@
 
 ## Usage
 
+You can install it via the [PSGallery](https://www.powershellgallery.com/packages/posh-dotnet/)
+
+````powershell
+Install-Module posh-dotnet
+Import-Module posh-dotnet
+````
+
+Alternatively you can also use it directly from this repo
+
 ````powershell
 git clone https://github.com/bergmeister/posh-dotnet.git
-cd posh-dotnet
+cd .\posh-dotnet
 Import-Module .\posh-dotnet.psd1
 ````
 
-The first time you use it in a new shell you have to press tab twice but afterwards it works as expected.
+Note: The first time you use it in a new shell you have to press tab twice but afterwards it works as expected.
 
-It has been tested on `Windows PowerShell 5.1` using the dotnet CLI version 2.0.
+It has been tested on `Windows PowerShell 5.1` using the dotnet CLI version 2.0.3
