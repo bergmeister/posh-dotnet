@@ -37,6 +37,8 @@ Describe 'TabExpansion2 using v1.0 CLI' {
     }
 
     It "dotnet build --c gets expanded to dotnet build --configuration" {
+        Write-Verbose "$(dotnet build --help)" -Verbose
+        Write-Verbose "$(dotnet run --help)" -Verbose
         $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
         $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
     }
