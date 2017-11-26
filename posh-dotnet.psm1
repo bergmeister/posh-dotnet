@@ -112,7 +112,7 @@ $completion_Dotnet = {
                         {
                             if ($Matches[1].Contains('|'))
                             {
-                                $Matches[1].Split('|') | ForEach-Object { $options += $_ }
+                                $options += $Matches[1].Split('|') 
                             }
                             else
                             {
