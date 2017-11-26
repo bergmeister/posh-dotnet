@@ -1,18 +1,42 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingEmptyCatchBlock", "")]Param()
+Import-Module (Join-Path $PSScriptRoot "posh-dotnet.psd1") 
 
+Describe 'TabExpansion2 using latest CLI' {
 
-Describe 'TabExpansion2' {
+    It "dotnet b gets expanded to dotnet build" {
+        $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
+        $commandCompletion.CompletionMatches.CompletionText[0] | Should Be 'build'
+    }
+
+    It "dotnet build --c gets expanded to dotnet build --configuration" {
+        $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
+        $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
+    }
+
+}
+
+Describe 'TabExpansion2 using v1.0 CLI' {
     
-    $poshdotnet_moduleName = 'posh-dotnet'
-    # Note that the module does not get re-imported because removing the module would also remove the TabExpansion2 function
-    Import-Module (Join-Path $PSScriptRoot "$poshdotnet_moduleName.psd1") 
+    BeforeEach {
+        $globalDotJson = @"
+{
+    "sdk": {
+        "version": "1.0.0"
+    }
+}
+"@
+        $globalDotJson | Set-Content global.json
+    }
+
+    AfterEach {
+        Remove-Item .\global.json
+    }
     
     It "dotnet b gets expanded to dotnet build" {
         $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
         $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
     }
 
-    It "dotnet build --c gets expanded to dotnet build --configuration" {
+    It "dotnet build --c gets expanded to dotnet build --configuration " {
         $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
         $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
     }
