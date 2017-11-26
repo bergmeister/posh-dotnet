@@ -9,7 +9,7 @@ Describe 'TabExpansion2 using latest CLI' {
 
     It "dotnet b gets expanded to dotnet build" {
         $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
-        $commandCompletion.CompletionMatches.CompletionText[0] | Should Be 'build'
+        $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
     }
 
     It "dotnet build --c gets expanded to dotnet build --configuration" {
