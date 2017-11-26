@@ -37,8 +37,8 @@ Describe 'TabExpansion2 using v1.0 CLI' {
     }
 
     It "dotnet build --c gets expanded to dotnet build --configuration" {
-        $commandCompletion = TabExpansion2 -inputScript "dotnet build --b" -cursorColumn 16
-        $commandCompletion.CompletionMatches.CompletionText | Should Be '--build-profile'
+        $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
+        $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
     }
 
 }
