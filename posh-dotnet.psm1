@@ -53,68 +53,80 @@ filter script:MatchingCommand($commandName)
 $completion_Dotnet = {
     param($commandName, $commandAst, $cursorPosition)
 
-    $command = $null
-    $commandParameters = @{}
-    $state = "Unknown"
-    $wordToComplete = $commandAst.CommandElements | Where-Object { $_.ToString() -eq $commandName } | Foreach-Object { $commandAst.CommandElements.IndexOf($_) }
-
-    for ($i = 1; $i -lt $commandAst.CommandElements.Count; $i++)
+    [int]$dotnetMajorVersion = [int]::Parse(((dotnet --version)[0]))
+    if ($dotnetMajorVersion -ge 2)
     {
-        $p = $commandAst.CommandElements[$i].ToString()
-
-        if ($p.StartsWith("-"))
-        {
-            if ($state -eq "Unknown" -or $state -eq "Options")
-            {
-                $commandParameters[$i] = "Option"
-                $state = "Options"
-            }
-            else
-            {
-                $commandParameters[$i] = "CommandOption"
-                $state = "CommandOptions"
-            }
-        } 
-        else 
-        {
-            $commandParameters[$i] = "Command"
-            $command = $p
-            $state = "CommandOptions"
+        # Starting from version 2, the dotnet CLI offers a dedicated complete command. See https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md
+        dotnet complete --position $cursorPosition "$commandAst" | ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
         }
     }
-    
-    if ($wordToComplete -ne $null)
+    else
     {
-        $commandToComplete = $commandParameters[$wordToComplete]
-    }
+        $command = $null
+        $commandParameters = @{}
+        $state = "Unknown"
+        $wordToComplete = $commandAst.CommandElements | Where-Object { $_.ToString() -eq $commandName } | Foreach-Object { $commandAst.CommandElements.IndexOf($_) }
 
-    switch ($commandToComplete)
-    {
-        "Command" { $global:DotnetCompletion["commands"].Keys | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult }
-        "Option" { $global:DotnetCompletion["options"] | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult }
-        "CommandOption"
-        { 
-            $options = $global:DotnetCompletion["commands"][$command]["options"]
-            if ($options.Count -eq 0)
+        for ($i = 1; $i -lt $commandAst.CommandElements.Count; $i++)
+        {
+            $p = $commandAst.CommandElements[$i].ToString()
+
+            if ($p.StartsWith("-"))
             {
-                dotnet $command --help | ForEach-Object {
-                    if ($_ -match $flagRegex)
-                    {
-                        $options += $Matches[1]
-                        if ($Matches[2] -ne $null)
+                if ($state -eq "Unknown" -or $state -eq "Options")
+                {
+                    $commandParameters[$i] = "Option"
+                    $state = "Options"
+                }
+                else
+                {
+                    $commandParameters[$i] = "CommandOption"
+                    $state = "CommandOptions"
+                }
+            } 
+            else 
+            {
+                $commandParameters[$i] = "Command"
+                $command = $p
+                $state = "CommandOptions"
+            }
+        }
+        
+        if ($wordToComplete -ne $null)
+        {
+            $commandToComplete = $commandParameters[$wordToComplete]
+        }
+
+        switch ($commandToComplete)
+        {
+            "Command" { $global:DotnetCompletion["commands"].Keys | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult }
+            "Option" { $global:DotnetCompletion["options"] | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult }
+            "CommandOption"
+            { 
+                $options = $global:DotnetCompletion["commands"][$command]["options"]
+                if ($options.Count -eq 0)
+                {
+                    dotnet $command --help | ForEach-Object {
+                        if ($_ -match $flagRegex)
                         {
-                            $options += $Matches[2]
+                            $options += $Matches[1]
+                            if ($Matches[2] -ne $null)
+                            {
+                                $options += $Matches[2]
+                            }
                         }
                     }
                 }
-            }
 
-            $global:DotnetCompletion["commands"][$command]["options"] = $options
-            $options | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult
+                $global:DotnetCompletion["commands"][$command]["options"] = $options
+                $options | MatchingCommand -Command $commandName | Sort-Object | Get-AutoCompleteResult
+            }
+            default { $global:DotnetCompletion["commands"].Keys | MatchingCommand -Command $commandName }
         }
-        default { $global:DotnetCompletion["commands"].Keys | MatchingCommand -Command $commandName }
     }
 }
+
 
 if (Get-Command Register-ArgumentCompleter -ea Ignore)
 {
