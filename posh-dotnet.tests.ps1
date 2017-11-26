@@ -36,11 +36,9 @@ Describe 'TabExpansion2 using v1.0 CLI' {
         $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
     }
 
-    It "dotnet build --n gets expanded to dotnet build --no-dependencies " {
-        Write-Verbose "$(dotnet build --help)" -Verbose
-        Write-Verbose "$(dotnet run --help)" -Verbose
-        $commandCompletion = TabExpansion2 -inputScript "dotnet build --n" -cursorColumn 16
-        $commandCompletion.CompletionMatches.CompletionText | Should Be '--no-dependencies'
+    It "dotnet build --c gets expanded to dotnet build --configuration " {
+        $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
+        $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
     }
 
 }

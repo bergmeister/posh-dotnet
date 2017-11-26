@@ -116,6 +116,14 @@ $completion_Dotnet = {
                                 $options += $Matches[2]
                             }
                         }
+                        elseif ($_ -match "^  (-[^, =]+),? ?(-[^= ]+)?") # version 1.0 has -c|--configuration for some options like e.g. dotnet build --help
+                        {
+                            $options += $Matches[1]
+                            if ($Matches[2] -ne $null)
+                            {
+                                $options += $Matches[2]
+                            }
+                        }
                     }
                 }
 
