@@ -6,6 +6,8 @@
 
 ## Usage
 
+Note that the .Net Core 2.0 CLI added some tab completion capabilities but they are disabled by default. See [here](https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md) for how to enable them. You can then decide for yourself if you would still like to use this module. In my personal opinion the CLI version 2.0.3 already has better tab completion than this module.
+
 You can install it via the [PSGallery](https://www.powershellgallery.com/packages/posh-dotnet/)
 
 ````powershell
