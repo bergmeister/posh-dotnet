@@ -110,10 +110,17 @@ $completion_Dotnet = {
                     dotnet $command --help | ForEach-Object {
                         if ($_ -match $flagRegex)
                         {
-                            $options += $Matches[1]
-                            if ($Matches[2] -ne $null)
+                            if ($Matches[1].Contains('|'))
                             {
-                                $options += $Matches[2]
+                                $Matches[1].Split('|') | ForEach-Object { $options += $_ }
+                            }
+                            else
+                            {
+                                $options += $Matches[1]
+                                if ($Matches[2] -ne $null)
+                                {
+                                    $options += $Matches[2]
+                                }
                             }
                         }
                         elseif ($_ -match "^  (-[^, =]+),? ?(-[^= ]+)?") # version 1.0 has -c|--configuration for some options like e.g. dotnet build --help
