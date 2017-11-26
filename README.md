@@ -4,9 +4,7 @@
 
 ![Tab completion demo](demo.gif)
 
-## Usage
-
-UPDATE: In version 2.0 of the dotnet CLI, tab completion capabilities were added but they are disabled by default. See [here](https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md) for how to enable them. You can then decide for yourself if you would still like to use this module since the CLI version 2.0.3 has better tab completion capabilities than this module.
+## Installation
 
 You can install it via the [PSGallery](https://www.powershellgallery.com/packages/posh-dotnet/)
 
@@ -18,7 +16,6 @@ else {
     Install-Module TabExpansionPlusPlus -Force
     Install-Module posh-dotnet -Force
 }
-Import-Module posh-dotnet
 ````
 
 Alternatively you can also use it directly from this repo
@@ -29,4 +26,10 @@ cd .\posh-dotnet
 Import-Module .\posh-dotnet.psd1
 ````
 
-It has been tested on `Windows PowerShell 5.1` and `PowerShell Core 6.0 RC` using the dotnet CLI version 2.0.3 but it should also work down to version 3.0 of `PowerShell`.
+## Usage
+
+````powershell
+Import-Module posh-dotnet
+````
+
+It has been tested using the dotnet CLI version 1.0.3 and 2.0.3 on `Windows PowerShell 5.1` and `PowerShell Core 6.0 RC` but it should also work down to version 3.0 of `PowerShell`.
