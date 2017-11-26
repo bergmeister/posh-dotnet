@@ -50,6 +50,37 @@ filter script:MatchingCommand($commandName)
     }
 }
 
+# extracts help for dotnet cli v2
+function Get-HelpTextV2HashTable
+{
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
+    Param
+    (
+        $commandAst,
+        $completionList
+    )
+
+    $help = Invoke-Expression "$([string]::Join(" ", $commandAst.CommandElements)) --help"
+$commandHelp = @{}
+    foreach ($command in $completionList)
+    {
+        $help | ForEach-Object {
+            # a command help ends with ',' or ' '
+            if ($_.Length -gt 2 -and $_.StartsWith("  ") -and ( $_.Remove(0, 2).StartsWith("$command ") -or $_.Remove(0, 2).StartsWith("$command,")))
+            {
+                $helpText =  $_.TrimStart().Remove(0, $Command.Length).TrimStart()
+                $commandHelp.Add($command, $helpText)
+            }
+            elseif ($_.Length -gt 2 -and -not $_.StartsWith("  ") -and  $_.Contains(" $command ")) # dotnet new
+            {
+                $helpText =  ($_ -split "  ")[0]
+                $commandHelp.Add($command, $helpText)
+            }
+        }
+    }
+    return $commandHelp
+}
+
 $completion_Dotnet = {
     param($commandName, $commandAst, $cursorPosition)
 
@@ -60,7 +91,8 @@ $completion_Dotnet = {
         $completionList = dotnet complete --position $cursorPosition "$commandAst"
         if ([string]::IsNullOrWhiteSpace($commandName))
         {
-            $completionList | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+            $helpList = Get-HelpTextV2HashTable $commandAst $completionList
+            $helpList.Keys | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $helpList[$_])  }
         }
         else
         {
