@@ -1,17 +1,23 @@
 # posh-dotnet [![Build status](https://ci.appveyor.com/api/projects/status/2gempqlml4wp9u4w/branch/master?svg=true)](https://ci.appveyor.com/project/bergmeister/posh-dotnet/branch/master) [![AppVeyor tests](http://flauschig.ch/batch.php?type=tests&account=bergmeister&slug=posh-dotnet)](https://ci.appveyor.com/project/bergmeister/posh-dotnet/build/tests) [![codecov](https://codecov.io/gh/bergmeister/posh-dotnet/branch/master/graph/badge.svg)](https://codecov.io/gh/bergmeister/posh-dotnet) [![PSScriptAnalyzer](https://img.shields.io/badge/Linter-PSScriptAnalyzer-blue.svg)](http://google.com) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-`PowerShell` tab completion for the dotnet CLI.
+`PowerShell` tab completion for the [dotnet CLI](https://github.com/dotnet/cli).
 
 ![Tab completion demo](demo.gif)
 
 ## Usage
 
-Note that the .Net Core 2.0 CLI added some tab completion capabilities but they are disabled by default. See [here](https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md) for how to enable them. You can then decide for yourself if you would still like to use this module. In my personal opinion the CLI version 2.0.3 already has better tab completion than this module.
+UPDATE: In version 2.0 of the dotnet CLI, tab completion capabilities were added but they are disabled by default. See [here](https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md) for how to enable them. You can then decide for yourself if you would still like to use this module since the CLI version 2.0.3 has better tab completion capabilities than this module.
 
 You can install it via the [PSGallery](https://www.powershellgallery.com/packages/posh-dotnet/)
 
 ````powershell
-Install-Module posh-dotnet
+if ($PSVersionTable.PSVersion.Major -ge 5) {
+    Install-Module posh-dotnet -Force
+}
+else {
+    Install-Module TabExpansionPlusPlus -Force
+    Install-Module posh-dotnet -Force
+}
 Import-Module posh-dotnet
 ````
 
@@ -23,4 +29,4 @@ cd .\posh-dotnet
 Import-Module .\posh-dotnet.psd1
 ````
 
-It has been tested on `Windows PowerShell 5.1` and `PowerShell Core RC` using the dotnet CLI version 2.0.3.
+It has been tested on `Windows PowerShell 5.1` and `PowerShell Core 6.0 RC` using the dotnet CLI version 2.0.3 but it should also work down to version 3.0 of `PowerShell`.

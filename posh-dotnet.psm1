@@ -116,9 +116,12 @@ $completion_Dotnet = {
     }
 }
 
-# Register the TabExpension2 function
-if (-not $global:options) { $global:options = @{CustomArgumentCompleters = @{}; NativeArgumentCompleters = @{}}
+if (Get-Command Register-ArgumentCompleter -ea Ignore)
+{
+    Register-ArgumentCompleter -CommandName 'dotnet' -ScriptBlock $Completion_Dotnet -Native
 }
-$global:options['NativeArgumentCompleters']['dotnet'] = $Completion_Dotnet
-
-$function:tabexpansion2 = $function:tabexpansion2 -replace 'End\r\n{', 'End { if ($null -ne $options) { $options += $global:options} else {$options = $global:options}'
+else
+{
+    # in version 3 and 4 of PS, one needs to install TabExpansionPlusPlus for backcompat. No check for the psversion needed since the manifest does that already. 
+    throw "Required module TabExpansionPlusPlus is not installed. Please install it using 'Install-Module TabExpansionPlusPlus'"    
+}
