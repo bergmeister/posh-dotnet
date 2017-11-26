@@ -92,7 +92,7 @@ $completion_Dotnet = {
         if ([string]::IsNullOrWhiteSpace($commandName))
         {
             $helpList = Get-HelpTextV2HashTable $commandAst $completionList
-            $helpList.Keys | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $helpList[$_])  }
+            $helpList.Keys | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $helpList[$_])  }
         }
         else
         {
