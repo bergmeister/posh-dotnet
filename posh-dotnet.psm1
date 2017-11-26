@@ -57,9 +57,17 @@ $completion_Dotnet = {
     if ($dotnetMajorVersion -ge 2)
     {
         # Starting from version 2, the dotnet CLI offers a dedicated complete command. See https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md
-        dotnet complete --position $cursorPosition "$commandAst" | ForEach-Object {
-            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+        $completionList = dotnet complete --position $cursorPosition "$commandAst"
+        if ([string]::IsNullOrWhiteSpace($commandName))
+        {
+            $completionList | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
         }
+        else
+        {
+            $completionList | Where-Object {
+                $_.StartsWith($commandAst.CommandElements[$commandAst.CommandElements.Count-1]) } | ForEach-Object {
+                    [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
+        }     
     }
     else
     {

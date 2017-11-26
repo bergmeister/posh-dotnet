@@ -2,6 +2,11 @@ Import-Module (Join-Path $PSScriptRoot "posh-dotnet.psd1")
 
 Describe 'TabExpansion2 using latest CLI' {
 
+    It "dotnet gets expanded to dotnet add" {
+        $commandCompletion = TabExpansion2 -inputScript "dotnet " -cursorColumn 7
+        $commandCompletion.CompletionMatches.CompletionText[0] | Should Be 'add'
+    }
+
     It "dotnet b gets expanded to dotnet build" {
         $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
         $commandCompletion.CompletionMatches.CompletionText[0] | Should Be 'build'
