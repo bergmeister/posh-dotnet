@@ -61,8 +61,6 @@ function Get-HelpTextV2HashTable
         $completionList
     )
 
-    $exp = "$([string]::Join(" ", $CommandElements)) --help"
-    $exp | out-File exp.txt
     $help = Invoke-Expression "$([string]::Join(" ", $CommandElements)) --help"
     $commandHelp = @{}
     foreach ($command in $completionList)
