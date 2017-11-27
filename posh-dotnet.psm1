@@ -103,7 +103,7 @@ $completion_Dotnet = {
                 $_.StartsWith($commandAst.CommandElements[$commandAst.CommandElements.Count-1])
             }
             # do not use last incomplete command
-            $commandElementsExceptLastOne = $commandAst.CommandElements | select -First ($commandAst.CommandElements.Count-1)
+            $commandElementsExceptLastOne = $commandAst.CommandElements | Select-Object -First ($commandAst.CommandElements.Count-1)
             $helpList = Get-HelpTextV2HashTable $commandElementsExceptLastOne $completionList
         }
         $completionList | ForEach-Object { if ($null -eq $helpList[$_]){ $helpList.Add($_,$_)} } # add missing help entries that could not get parsed
