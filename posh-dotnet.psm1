@@ -53,15 +53,18 @@ filter script:MatchingCommand($commandName)
 # extracts help for dotnet cli v2
 function Get-HelpTextV2HashTable
 {
+    # since commandElements is a strongly typed ast (that has already been parsed), the command injection risk has been mitigated
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
     Param
     (
-        $commandAst,
+        [System.Management.Automation.Language.StringConstantExpressionAst[]]$commandElements,
         $completionList
     )
 
-    $help = Invoke-Expression "$([string]::Join(" ", $commandAst.CommandElements)) --help"
-$commandHelp = @{}
+    $exp = "$([string]::Join(" ", $CommandElements)) --help"
+    $exp | out-File exp.txt
+    $help = Invoke-Expression "$([string]::Join(" ", $CommandElements)) --help"
+    $commandHelp = @{}
     foreach ($command in $completionList)
     {
         $help | ForEach-Object {
@@ -89,17 +92,24 @@ $completion_Dotnet = {
     {
         # Starting from version 2, the dotnet CLI offers a dedicated complete command. See https://github.com/dotnet/cli/blob/master/Documentation/general/tab-completion.md
         $completionList = dotnet complete --position $cursorPosition "$commandAst"
+        # the user has not given any details about the next command to be tab completed
         if ([string]::IsNullOrWhiteSpace($commandName))
         {
-            $helpList = Get-HelpTextV2HashTable $commandAst $completionList
-            $helpList.Keys | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $helpList[$_])  }
+            [hashtable]$helpList = Get-HelpTextV2HashTable $commandAst.CommandElements $completionList
+            $completionList | ForEach-Object { if ($null -eq $helpList[$_]){ $helpList.Add($_,$_)} }
+            $completionList | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $helpList[$_])  }
         }
         else
         {
-            $completionList | Where-Object {
-                $_.StartsWith($commandAst.CommandElements[$commandAst.CommandElements.Count-1]) } | ForEach-Object {
-                    [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }
-        }     
+            $completionList = $completionList | Where-Object {
+                $_.StartsWith($commandAst.CommandElements[$commandAst.CommandElements.Count-1])
+            }
+            # do not use last incomplete command
+            $commandElementsExceptLastOne = $commandAst.CommandElements | select -First ($commandAst.CommandElements.Count-1)
+            $helpList = Get-HelpTextV2HashTable $commandElementsExceptLastOne $completionList
+        }
+        $completionList | ForEach-Object { if ($null -eq $helpList[$_]){ $helpList.Add($_,$_)} } # add missing help entries that could not get parsed
+        $completionList | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $helpList[$_])  }   
     }
     else
     {

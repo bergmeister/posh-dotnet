@@ -1,20 +1,34 @@
 Import-Module (Join-Path $PSScriptRoot "posh-dotnet.psd1") 
 
+Function Invoke-TabExpansion([string]$InputScript) {
+    TabExpansion2 -inputScript $InputScript -cursorColumn $InputScript.Length
+}
+
 Describe 'TabExpansion2 using latest CLI' {
 
     It "dotnet gets expanded to dotnet add" {
-        $commandCompletion = TabExpansion2 -inputScript "dotnet " -cursorColumn 7
+        $commandCompletion = Invoke-TabExpansion "dotnet "
         $commandCompletion.CompletionMatches.CompletionText[0] | Should Be 'add'
     }
 
     It "dotnet b gets expanded to dotnet build" {
-        $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
+        $commandCompletion = Invoke-TabExpansion "dotnet b"
         $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
     }
 
     It "dotnet build --c gets expanded to dotnet build --configuration" {
-        $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
+        $commandCompletion = Invoke-TabExpansion "dotnet build --c"
         $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
+    }
+
+    It "Commands cannot be injected" {
+        $harmFulCommand = {mkdir injected}
+        Invoke-TabExpansion "dotnet $harmFulCommand"
+        Invoke-TabExpansion "dotnet $harmFulCommand"
+        Invoke-TabExpansion "dotnet --help; $harmFulCommand;"
+        Invoke-TabExpansion "dotnet build; $harmFulCommand;"
+        Invoke-TabExpansion "dotnet build --help; $harmFulCommand;"
+        Test-Path injected | Should Be $false
     }
 
 }
@@ -37,12 +51,12 @@ Describe 'TabExpansion2 using v1.0 CLI' {
     }
     
     It "dotnet b gets expanded to dotnet build" {
-        $commandCompletion = TabExpansion2 -inputScript "dotnet b" -cursorColumn 8
+        $commandCompletion = Invoke-TabExpansion "dotnet b"
         $commandCompletion.CompletionMatches.CompletionText | Should Be 'build'
     }
 
     It "dotnet build --c gets expanded to dotnet build --configuration " {
-        $commandCompletion = TabExpansion2 -inputScript "dotnet build --c" -cursorColumn 16
+        $commandCompletion = Invoke-TabExpansion "dotnet build --c"
         $commandCompletion.CompletionMatches.CompletionText | Should Be '--configuration'
     }
 
